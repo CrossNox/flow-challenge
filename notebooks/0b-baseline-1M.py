@@ -28,8 +28,11 @@ df, metadata = load_data()
 # # Prediction using top 20 most viewed content items
 
 # %%
-def MAP_1M(m=1):
+def MAP_1M(m=1, drop_duplicates=False):
     train, test = sample_users(df, seed=117)
+    
+    if drop_duplicates:
+        train.drop_duplicates(subset=["account_id", "content_id"], inplace=True)
     
     top_content = train[train.tunein.dt.month == m].content_id.value_counts()
     
@@ -82,6 +85,15 @@ map_1 = MAP_1M(1)
 
 # %%
 map_2 = MAP_1M(2)
+
+# %%
+map_1, map_2, (map_1 + map_2) / 2
+
+# %%
+map_1 = MAP_1M(1, drop_duplicates=True)
+
+# %%
+map_2 = MAP_1M(2, drop_duplicates=True)
 
 # %%
 map_1, map_2, (map_1 + map_2) / 2
