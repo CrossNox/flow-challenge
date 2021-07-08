@@ -1,7 +1,16 @@
 from sklearn.model_selection import train_test_split
 from typing import Sequence, Tuple
+from pathlib import Path
 import numpy as np
 import pandas as pd
+
+def load_data(drop_N_cols=True):
+    df = pd.read_csv(Path(".") / ".." / "data" / "train.csv", parse_dates=["tunein", "tuneout"])
+    metadata = pd.read_csv(Path(".") / ".." / "data" / "metadata.csv", sep=";")
+    df = df.merge(metadata[["content_id", "asset_id"]], right_on="asset_id", left_on="asset_id", how="left")
+    if drop_N_cols:
+        metadata = metadata[metadata.columns[~(metadata == "N").all()]]
+    return df, metadata
 
 def sample_users(df: pd.DataFrame, prop:float=0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Sample users from df.
