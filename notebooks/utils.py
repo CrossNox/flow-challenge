@@ -6,7 +6,7 @@ import pandas as pd
 
 def load_data(drop_N_cols=True):
     df = pd.read_csv(Path(".") / ".." / "data" / "train.csv", parse_dates=["tunein", "tuneout"])
-    metadata = pd.read_csv(Path(".") / ".." / "data" / "metadata.csv", sep=";")
+    metadata = pd.read_csv(Path(".") / ".." / "data" / "metadata.csv", sep=";", parse_dates=["create_date", "modify_date", "start_vod_date", "end_vod_date"])
     df = df.merge(metadata[["content_id", "asset_id"]], right_on="asset_id", left_on="asset_id", how="left")
     if drop_N_cols:
         metadata = metadata[metadata.columns[~(metadata == "N").all()]]
