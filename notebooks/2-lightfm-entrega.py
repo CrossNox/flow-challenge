@@ -120,7 +120,7 @@ trainset_train_m.index = trainset_train_m.index.astype(np.int32)
 N_COMPONENTS = 50
 MAX_SAMPLED = 100
 LR = 0.01
-EPOCHS = 5
+EPOCHS = 1
 
 # %%
 model = LightFM(no_components=N_COMPONENTS, loss="warp", learning_schedule="adagrad", learning_rate=LR, max_sampled=MAX_SAMPLED)
