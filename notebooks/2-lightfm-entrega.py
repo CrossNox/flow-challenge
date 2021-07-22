@@ -51,6 +51,9 @@ tqdm.pandas()
 # # Pre-procesamiento de datos
 
 # %%
+AGG = "sum"
+
+# %%
 df, metadata = load_data()
 
 all_users = np.arange(df.account_id.min(), df.account_id.max()+1).astype(np.int32)
@@ -95,7 +98,7 @@ trainset_train_m = df_train.pivot_table(
     index="account_id",
     columns="content_id",
     values="dummy",
-    aggfunc="sum",
+    aggfunc=AGG,
     fill_value=0,
 )
 
@@ -117,10 +120,10 @@ trainset_train_m.index = trainset_train_m.index.astype(np.int32)
 # # Entrenamos modelo
 
 # %%
-N_COMPONENTS = 50
+N_COMPONENTS = 500
 MAX_SAMPLED = 100
-LR = 0.01
-EPOCHS = 1
+LR = 0.05
+EPOCHS = 5
 
 # %%
 model = LightFM(no_components=N_COMPONENTS, loss="warp", learning_schedule="adagrad", learning_rate=LR, max_sampled=MAX_SAMPLED)
@@ -143,7 +146,7 @@ testset_m = df_test.pivot_table(
     index="account_id",
     columns="content_id",
     values="dummy",
-    aggfunc="sum",
+    aggfunc=AGG,
     fill_value=0,
 )
 
@@ -165,7 +168,7 @@ lfm_auc_score(
     model,
     scipy.sparse.csr_matrix(testset_m),
     num_threads=1,
-    #item_features=metadata_sub
+    # item_features=metadata_sub
 ).mean()
 
 
@@ -191,19 +194,15 @@ def predict_for_user(user_id):
     return preds
 
 
-z = pd.DataFrame({"user_id": df.account_id.drop_duplicates().sort_values().unique()})
+z = pd.DataFrame({"user_id": all_users})
 z["recs"] = z.user_id.parallel_apply(predict_for_user)
 z = z.sort_values("user_id")
 
-# %%
 ground_truth = pd.DataFrame(df_test.groupby("account_id").content_id.agg(list).sort_index()).rename(columns={"content_id": "seen"})
 
 mix = pd.merge(z, ground_truth, left_index=True, right_index=True, how="left")
 mix["seen"] = mix.seen.apply(lambda x: x if isinstance(x, list) else [])
 
-# mix
-
-# %%
 MAP(mix.seen, mix.recs)
 
 # %% [markdown]
@@ -226,14 +225,17 @@ m = df.pivot_table(
     index="account_id",
     columns="content_id",
     values="dummy",
-    aggfunc="sum",
+    aggfunc=AGG,
     fill_value=0,
 )
 
 # %%
+m.shape
+
+# %%
 zero_fill = pd.DataFrame(
     0,
-    index=list(set(all_users) - set(m.index)),
+    index=list(set(all_users) - set(m.index.values)),
     columns=m.columns,
 )
 m = pd.concat([m, zero_fill])
@@ -243,6 +245,9 @@ m = m.sort_index()
 m = m[sorted(m.columns)]
 
 m.index = m.index.astype(np.int32)
+
+# %%
+m.shape
 
 # %%
 model = LightFM(no_components=N_COMPONENTS, loss="warp", learning_schedule="adagrad", learning_rate=LR, max_sampled=MAX_SAMPLED)
@@ -278,7 +283,7 @@ def predict_for_user(user_id):
     return preds
 
 
-z = pd.DataFrame({"user_id": df.account_id.drop_duplicates().sort_values().unique()})
+z = pd.DataFrame({"user_id": all_users})
 z["recs"] = z.user_id.parallel_apply(predict_for_user)
 z = z.sort_values("user_id")
 
@@ -289,6 +294,9 @@ z["recs"] = z.recs.apply(json.dumps)
 z.to_csv("../entregas/2-lightfm-2.csv", index=False, escapechar='"', header=False)
 
 # %%
-assert len(z) == df.account_id.nunique()
+assert len(z) == df.account_id.max() + 1
+
+# %%
+z
 
 # %%
