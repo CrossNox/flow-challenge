@@ -272,7 +272,7 @@ new_contents = max_date_content[pd.to_datetime(max_date_content['start_vod_date'
 predictions = {}
 keys_for_prediction_sample = list(set(test_contents_months12.keys()))
 random.shuffle(keys_for_prediction_sample)
-for k in tqdm(keys_for_prediction_sample[:200]):
+for k in tqdm(keys_for_prediction_sample[:1000]):
 #for k1,k2,k3,k4 in tqdm(zip(*[iter(keys_for_prediction_sample)]*4), total=(keys_for_prediction_sample//4+keys_for_prediction_sample%4)):
     input_prediction_list = test_contents_months12[k]
     not_seen = set(most_popular_cids+new_contents)
