@@ -6,3 +6,6 @@ scikit-learn==0.24.2
 matplotlib==3.4.2
 lightfm==1.16
 scikit-surprise==1.1.1
+pandarallel
+tqdm
+ipywidgets
