@@ -128,8 +128,12 @@ generator = data_generator(n_neg=4)
 
 preds = model.predict(generator, steps=10).flatten().tolist()
 
+from sklearn.metrics import roc_auc_score
+
 positive_preds = [preds[i] for i in range(len(preds)) if i%4==0]
 negative_preds = [preds[i] for i in range(len(preds)) if i%4!=0]
+
+roc_auc_score([1]*len(positive_preds)+[0]*len(negative_preds), positive_preds+negative_preds)
 
 np.median(positive_preds)
 

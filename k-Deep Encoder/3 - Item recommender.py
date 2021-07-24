@@ -302,4 +302,35 @@ for k in predictions.keys():
     pred_sequences[-1]+=popular_cids_not_seen[:0]
 MAP(true_sequences, pred_sequences)
 # -
+predictions = {}
+keys_for_prediction_sample = list(set(test_contents_months12.keys()))
+random.shuffle(keys_for_prediction_sample)
+for k in tqdm(keys_for_prediction_sample[:500]):
+#for k1,k2,k3,k4 in tqdm(zip(*[iter(keys_for_prediction_sample)]*4), total=(keys_for_prediction_sample//4+keys_for_prediction_sample%4)):
+    input_prediction_list = test_contents_months12[k]
+    not_seen = set(cid_to_index.keys())-set(input_prediction_list)
+    actual_sequence = []
+    for _ in range(20):
+        past_sequences, sequences_to_use_vector, sequences_to_use = get_sequences_predict(input_prediction_list, actual_sequence, not_seen)
+        preds = model.predict([past_sequences, sequences_to_use_vector])
+        actual_sequence = sequences_to_use[preds.flatten().argmax()]
+        not_seen = not_seen - set(actual_sequence)
+    predictions[k] = actual_sequence
+
+# +
+true_sequences = []
+pred_sequences = []
+
+for k in predictions.keys():
+    if k in test_contents_months3:
+        true_sequences.append(test_contents_months3[k])
+    else:
+        true_sequences.append([])
+    pred_sequences.append(predictions[k])
+    seen = test_contents_months12[k]
+    popular_cids_not_seen = [cid for cid in most_popular_cids if cid not in seen]
+    pred_sequences[-1]+=popular_cids_not_seen[:0]
+MAP(true_sequences, pred_sequences)
+# -
+
 
