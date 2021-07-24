@@ -13542,11 +13542,21 @@ a.anchor-link {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Encoder">Encoder<a class="anchor-link" href="#Encoder">&#182;</a></h2><p><img alt="Qries" src="images/flow_encoder.png" width="60%"></p>
+<h2 id="Content-Encoder">Content Encoder<a class="anchor-link" href="#Content-Encoder">&#182;</a></h2><p><img alt="Qries" src="images/flow_encoder.png" width="60%"></p>
 
 </div>
 </div>
-</div><div class="fragment">
+</div><aside class="notes">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Se entreno una red siamesa con cada item en alguna representacion vectorial (codificado con OHE, BOW, etc) con la intencion de obtener un embedding de cada item. Se samplean pares de items vistos juntos y no, y se trata de predecir si se vieron juntos o no. Lo que nos importa es tener el encoder entrenado para obtener embeddings.</p>
+
+</div>
+</div>
+</div>
+</aside><div class="fragment">
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13566,7 +13576,68 @@ a.anchor-link {
 
 </div>
 </div>
-</div></div></section></section><section><section>
+</div></div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sequence-predictor">Sequence predictor<a class="anchor-link" href="#Sequence-predictor">&#182;</a></h2><p><img alt="Qries" src="images/flow_predictor_1.png" width="60%"></p>
+
+</div>
+</div>
+</div><aside class="notes">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Se tiene una secuencia de embeddings de contenidos, con eso se obtienen tres embeddings, de las secuencias de entrada, salida y atencion.</p>
+
+</div>
+</div>
+</div>
+</aside></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sequence-predictor">Sequence predictor<a class="anchor-link" href="#Sequence-predictor">&#182;</a></h2><p><img alt="Qries" src="images/flow_predictor_2.png" width="60%"></p>
+
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>13873 parámetros de la red</li>
+</ul>
+
+</div>
+</div>
+</div><aside class="notes">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Se concatenan atencion con entrada y atencion con salida, se pasa por un encoder siames y predecimos si la lista de salida es real o no. Tomamos el argmax de cada item de salida y vamos generando iterativamente de a un contenido la lista completa de 20 elementos.</p>
+
+</div>
+</div>
+</div>
+</aside></div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sequence-predictor">Sequence predictor<a class="anchor-link" href="#Sequence-predictor">&#182;</a></h2><h3 id="Version-sin-optimizar">Version sin optimizar<a class="anchor-link" href="#Version-sin-optimizar">&#182;</a></h3><ul>
+<li>Tiempo: 25.09s/usuario</li>
+<li>MAP en test: 0.1099041433105365</li>
+</ul>
+<h3 id="Version-optimizada">Version optimizada<a class="anchor-link" href="#Version-optimizada">&#182;</a></h3><ul>
+<li>Tiempo: 5.28s/usuario</li>
+<li>MAP en test: 0.08420398669885898</li>
+</ul>
+
+</div>
+</div>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
